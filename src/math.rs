@@ -1,5 +1,3 @@
-pub use vecmath::traits::*;
-pub use vecmath::*;
 pub use float_ord::FloatOrd;
 use std::ops::{Add, Mul, Sub};
 

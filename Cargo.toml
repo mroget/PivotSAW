@@ -10,8 +10,11 @@ criterion = "0.3"
 name = "boundingbox"
 harness = false
 
+[[bench]]
+name = "lattice"
+harness = false
+
 
 [dependencies]
 float-ord = "0.3.2"
 rand = "0.10.0"
-vecmath = "1.0.0"
