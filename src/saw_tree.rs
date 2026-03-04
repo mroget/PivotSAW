@@ -1,3 +1,4 @@
+use crate::algebra::Matrix;
 use crate::boundingbox::BoundingBox;
 
 struct Node<T, const D : usize> {
@@ -5,7 +6,7 @@ struct Node<T, const D : usize> {
 	parent : Option<usize>,
 	left : Option<usize>,
 	right : Option<usize>,
-	matrix : [[T; D]; D],
+	matrix : Matrix<T,D,D>,
 	bounding_box : BoundingBox<T, D>,
 }
 
