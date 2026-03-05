@@ -1,3 +1,7 @@
+use crate::algebra::dot;
+use crate::algebra::vec_minus;
+use crate::algebra::Matrix;
+use crate::algebra::Vector;
 use crate::math::max;
 use crate::math::min;
 use crate::math::ArithmeticOps;
@@ -14,14 +18,16 @@ impl<T : ArithmeticOps, const D : usize> NewBoundingBox<T,D> for BoundingBox<T,D
 
 
 
-pub trait BBox<T> {
+pub trait BBox<T, const D : usize> {
 	fn union(&self, other : &Self) -> Self;
 	fn intersection(&self, other : &Self) -> Self;
 	fn is_empty(&self) -> bool;
+	fn transform(&self, q : Matrix<T,D,D>, origin : Vector<T,D>) -> Self;
+	fn shift(&self, s : Vector<T,D>) -> Self;
 }
 
 
-impl<T : ArithmeticOps, const D : usize> BBox<T> for BoundingBox<T,D> {
+impl<T : ArithmeticOps, const D : usize> BBox<T,D> for BoundingBox<T,D> {
 	fn union(&self, other : &Self) -> Self {
 		let mut ret = [[T::zero(), T::zero()];D];
 		for i in 0..D {
@@ -43,5 +49,18 @@ impl<T : ArithmeticOps, const D : usize> BBox<T> for BoundingBox<T,D> {
 			}
 		}
 		false
+	}
+	fn shift(&self, s : Vector<T,D>) -> Self {
+		let mut ret = self.clone();
+		for i in 0..D {
+			for j in 0..2 {
+				ret[i][j] = self[i][j] + s[i];
+			}
+		}
+		ret
+	}
+
+	fn transform(&self, q : Matrix<T,D,D>, origin : Vector<T,D>) -> Self {
+		dot(q,self.shift(vec_minus(origin))).shift(origin).map(|x| if x[0] < x[1] {x} else {[x[1],x[0]]})
 	}
 }

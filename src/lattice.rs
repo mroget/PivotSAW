@@ -1,3 +1,5 @@
+use crate::symmetry_group::DIHEDRAL4;
+use crate::symmetry_group::SymmetryGroup;
 use crate::algebra::vec_len;
 use crate::algebra::Vector;
 use crate::math::ArithmeticOps;
@@ -5,60 +7,36 @@ use rand::rngs::ThreadRng;
 use rand::RngExt;
 
 #[derive(Clone, Debug)]
-pub struct Lattice<T, const D: usize> {
-	turns : Vec<Vector<T,D>>,
-	symmetries : Vec<Vector<T,D>>,
+pub struct Lattice<T, const D: usize, const N: usize> {
+	pub turns : Vec<Vector<T,D>>,
+	pub symmetries : SymmetryGroup<T,D,N>,
 }
-impl<T: ArithmeticOps, const D: usize> Lattice<T, D> {
-	pub fn new(turns : Vec<Vector<T,D>>, symmetries : Vec<Vector<T,D>>) -> Self {
+impl<T: ArithmeticOps, const D: usize, const N: usize> Lattice<T, D, N> {
+	pub fn new(turns : Vec<Vector<T,D>>, symmetries : SymmetryGroup<T,D,N>) -> Self {
 		Lattice {
 			turns : turns,
 			symmetries : symmetries,
 		}
 	}
-
+}
+impl<T: ArithmeticOps> Lattice<T, 2, 8> where [[[T; 2]; 2]; 8]: From<[[[i32; 2]; 2]; 8]> {
 	pub fn square_grid(a : T) -> Self {
-		let mut turns = vec![[T::zero(); D]; D];
-		for i in 0..D {
+		let mut turns = vec![[T::zero(); 2]; 2];
+		for i in 0..2 {
 			turns[i][i] = a;
 		}
 		Lattice {
 			turns : turns,
-			symmetries : vec![],
+			symmetries : DIHEDRAL4.into(),
 		}
 	}
 }
-impl<T: ArithmeticOps, const D: usize> Lattice<T, D> {
 
-	pub fn degree(&self) -> usize { self.turns.len() }
-
-	pub fn symmetry_count(&self) -> usize { self.symmetries.len() }
-
-	pub fn get_turn(&self, k: usize) -> Vector<T,D> { 
-		if k >= self.turns.len() {
-			panic!("Turn number {k} does not exists !");
-		}
-		self.turns[k] 
-	}
-
-	pub fn get_symmetry(&self, k: usize) -> Vector<T,D> {
-		if k >= self.symmetries.len() {
-			panic!("Turn number {k} does not exists !");
-		}
-		self.turns[k] 
-	}
-
-	pub fn turns(&self) -> Vec<Vector<T,D>> {
-	 	(0..self.turns.len()).map(|i| self.turns[i]).collect()
-	 }
-
-	pub fn symmetries(&self) -> Vec<Vector<T,D>> {
-	 	(0..self.symmetries.len()).map(|i| self.symmetries[i]).collect()
-	 }
+impl<T: ArithmeticOps, const D: usize, const N: usize> Lattice<T, D, N> {
 
 	pub fn random_turn(&self, rng : &mut ThreadRng, pdf : Option<&[f64]>) -> Vector<T,D> {
 		match pdf {
-			None => {self.turns[rng.random_range(0..self.degree())]},
+			None => {self.turns[rng.random_range(0..self.turns.len())]},
 			Some(x) => {
 				let r = rng.random_range((0.)..(1.));
 				let mut p = 0.;

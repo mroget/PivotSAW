@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 pub use float_ord::FloatOrd;
 use std::ops::{Add, Mul, Sub};
 
@@ -70,10 +71,10 @@ pub fn max<T: std::cmp::PartialOrd + Copy>(a : T, b : T) -> T {
 
 
 pub trait ArithmeticOps: 
-    Add<Output=Self> + Sub<Output=Self> + Mul<Output=Self> + std::cmp::PartialOrd + Zero + Copy
+    Add<Output=Self> + Sub<Output=Self> + Mul<Output=Self> + std::cmp::PartialOrd + Zero + Copy + Clone + Debug
     where Self: std::marker::Sized {
 }
 
 impl<T> ArithmeticOps for T 
-    where T: Add<Output=Self> + Sub<Output=Self> + Mul<Output=Self> + std::cmp::PartialOrd + Zero + Copy {
+    where T: Add<Output=Self> + Sub<Output=Self> + Mul<Output=Self> + std::cmp::PartialOrd + Zero + Copy + Clone + Debug {
 }

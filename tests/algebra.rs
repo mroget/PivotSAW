@@ -1,3 +1,4 @@
+use saw::algebra::transpose;
 use saw::algebra::IntoVector;
 use saw::algebra::dot;
 use saw::algebra::vec_len;
@@ -60,4 +61,19 @@ fn test_mat_apply_row() {
     let b = [[0,2],[3,4],[1,2]];
     let result : [i32;2] = dot(a,b).from_mat();
     assert_eq!(result, [6,14]);
+}
+
+
+#[test]
+fn test_transpose_mat() {
+    let a = [[0,1],[2,3]];
+    let result = transpose(a);
+    assert_eq!(result, [[0,2],[1,3]]);
+}
+
+#[test]
+fn test_transpose_vec() {
+    let a = [1,2,3];
+    let result = transpose(a);
+    assert_eq!(result, [[1,2,3]]);
 }

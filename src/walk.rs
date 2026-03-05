@@ -14,7 +14,7 @@ pub fn turns_to_coords<T : ArithmeticOps, const D : usize>(turns : Vec<Vector<T,
 		ret
 	}
 
-pub fn random_walk<T : ArithmeticOps, const D : usize>(lat : &Lattice<T,D>, length : usize, pdf : Option<&[f64]>, rng : &mut ThreadRng) -> Vec<Vector<T,D>> {
+pub fn random_walk<T : ArithmeticOps, const D : usize, const N : usize>(lat : &Lattice<T,D,N>, length : usize, pdf : Option<&[f64]>, rng : &mut ThreadRng) -> Vec<Vector<T,D>> {
 	if length == 0 {
 		panic!("A walk of 0 points does not have turns !");
 	}
@@ -38,7 +38,7 @@ pub fn is_saw<T : ArithmeticOps, const D : usize>(walk : &Vec<Vector<T,D>>) -> b
 	true
 }
 
-pub fn random_saw_naive<T : ArithmeticOps, const D : usize>(lat : &Lattice<T,D>, length : usize, rng : &mut ThreadRng) -> Vec<Vector<T,D>> {
+pub fn random_saw_naive<T : ArithmeticOps, const D : usize, const N : usize>(lat : &Lattice<T,D,N>, length : usize, rng : &mut ThreadRng) -> Vec<Vector<T,D>> {
 	loop {
 		let walk = random_walk(lat, length, None, rng);
 		if is_saw(&walk) {

@@ -92,7 +92,9 @@ pub fn vec_len<T : ArithmeticOps + ,const D : usize>(a : Vector<T,D>) -> f64 whe
 	(<T as Into<f64>>::into(vec_square_len(a))).sqrt()
 }
 
-
+pub fn vec_minus<T : ArithmeticOps,const D : usize>(a : Vector<T,D>) -> Vector<T,D> {
+	vec_sub([T::zero();D], a)
+}
 
 
 
@@ -119,4 +121,29 @@ M2 : IntoMatrix<T, D2, D3>,
 		}
 	}
 	ret
+}
+
+pub fn transpose<T : ArithmeticOps,
+const D1 : usize,
+const D2 : usize,
+M : IntoMatrix<T, D1, D2>,
+>(a : M) -> Matrix<T,D2,D1> {
+	let mut ret = [[T::zero();D1];D2];
+	let a = a.into();
+	for i in 0..D1 {
+		for j in 0..D2 {
+			ret[j][i] = a[i][j];
+		}
+	}
+	ret
+}
+
+pub fn transform<T : ArithmeticOps,const D : usize>(point : Vector<T,D>, q : Matrix<T,D,D>, origin : Vector<T,D>) -> Vector<T,D> {
+	vec_add(
+		dot(
+			q,
+			vec_sub(point,origin)
+			).from_mat(),
+		origin
+	)
 }
