@@ -7,15 +7,11 @@ edition = "2024"
 criterion = "0.3"
 
 [[bench]]
-name = "boundingbox"
-harness = false
-
-[[bench]]
-name = "lattice"
+name = "pivot"
 harness = false
 
 
 [dependencies]
-float-ord = "0.3.2"
-nalgebra = "0.34.1"
+num-traits = "0.2.19"
 rand = "0.10.0"
+tqdm = "0.8.0"

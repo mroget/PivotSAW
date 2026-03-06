@@ -1,9 +1,7 @@
-pub mod symmetry_group;
+mod symmetry_group;
 pub mod lattice;
-pub mod math;
-pub mod boundingbox;
-pub mod saw_tree;
-pub mod algebra;
+pub mod pivot;
+mod algebra;
 pub mod walk;
 
 pub fn add(left: u64, right: u64) -> u64 {

@@ -1,48 +1,119 @@
-use crate::lattice::Lattice;
-use crate::math::ArithmeticOps;
-use crate::algebra::vec_sub;
-use crate::algebra::vec_square_len;
-use rand::rngs::ThreadRng;
+
 use crate::algebra::Vector;
-use crate::algebra::vec_add;
+use num_traits::PrimInt;
+use crate::lattice::Lattice;
 
-pub fn turns_to_coords<T : ArithmeticOps, const D : usize>(turns : Vec<Vector<T,D>>) -> Vec<Vector<T,D>> {
-		let mut ret = vec![[T::zero();D]; turns.len()+1];
-		for i in 0..turns.len() {
-			ret[i+1] = vec_add(ret[i], turns[i]);
+#[derive(Debug, Clone, Copy)]
+enum Arc<T: PrimInt, const D : usize> {
+	Forward(Vector<T,D>),
+	Backward,
+}
+/// An iterator that lists all SAW of a given length. This is going to be a very large iterator for walk length above 10 for most lattices.
+pub struct SAWIterator<T : PrimInt + std::hash::Hash, const D : usize, const N : usize, L : Lattice<T, D, N>> {
+	lat : L,
+	walk : Vec<Vector<T,D>>,
+	stack : Vec<Arc<T,D>>,
+	over : bool,
+	n : usize,
+}
+
+impl<T : PrimInt + std::hash::Hash, const D : usize, const N : usize, L : Lattice<T, D, N>> SAWIterator<T,D,N,L> {
+	/// Create an iterator for a given lattice and walk length.
+	pub fn new(lat : L, n :usize) -> Self {
+		SAWIterator {
+			lat : lat,
+			walk : Vec::with_capacity(n),
+			stack : vec![Arc::Forward([T::zero(); D])],
+			over : false,
+			n : n,
 		}
-		ret
 	}
 
-pub fn random_walk<T : ArithmeticOps, const D : usize, const N : usize>(lat : &Lattice<T,D,N>, length : usize, pdf : Option<&[f64]>, rng : &mut ThreadRng) -> Vec<Vector<T,D>> {
-	if length == 0 {
-		panic!("A walk of 0 points does not have turns !");
-	}
-	turns_to_coords((0..length).map(|_i| lat.random_turn(rng, pdf)).collect())
-}
-
-pub fn collision<T : ArithmeticOps, const D : usize>(a : Vector<T,D>, b : Vector<T,D>) -> bool {
-	let dist = vec_square_len(vec_sub(a,b));
-
-	dist.is_zero()
-}
-
-pub fn is_saw<T : ArithmeticOps, const D : usize>(walk : &Vec<Vector<T,D>>) -> bool {
-	for i in 0..walk.len() {
-		for j in (i+1)..walk.len() {
-			if collision(walk[i], walk[j]) {
-				return false;
+	fn collision_with_tail(&self) -> bool {
+		for i in 0..(self.walk.len()-1) {
+			if self.walk[i] == self.walk[self.walk.len()-1] {
+				return true;
 			}
 		}
+		false
 	}
-	true
+
+	fn visit(&mut self) -> Option<Vec<Vector<T,D>>>{
+		match self.stack.pop() {
+			None => {self.over = true; return None;},
+			Some(Arc::Backward) => {
+				self.walk.pop();
+			},
+			Some(Arc::Forward(x)) => {
+				self.walk.push(x);
+				self.stack.push(Arc::Backward);
+				if self.collision_with_tail() {
+					return None;
+				}
+				if self.walk.len() == self.n {
+					return Some(self.walk.clone());
+				}
+				for ng in self.lat.neighbors(x).into_iter() {
+					self.stack.push(Arc::Forward(ng));
+				}
+			}
+		}
+		None
+	}
 }
 
-pub fn random_saw_naive<T : ArithmeticOps, const D : usize, const N : usize>(lat : &Lattice<T,D,N>, length : usize, rng : &mut ThreadRng) -> Vec<Vector<T,D>> {
-	loop {
-		let walk = random_walk(lat, length, None, rng);
-		if is_saw(&walk) {
-			return walk;
+impl<T : PrimInt + std::hash::Hash, const D : usize, const N : usize, L : Lattice<T, D, N>> Iterator for SAWIterator<T,D,N,L> {
+	type Item = Vec<Vector<T,D>>;
+	fn next(&mut self) -> Option<Self::Item> {
+		while !self.over {
+			match self.visit() {
+				None => {},
+				Some(x) => {return Some(x);}
+			}
 		}
+		None
+	}
+}
+
+
+#[cfg(test)]
+mod tests {
+	use crate::lattice::BaseLattice;
+	use crate::walk::SAWIterator;
+
+	#[test]
+	fn iter_1() {
+    	let lat = BaseLattice::square_grid(1);
+    	let it = SAWIterator::new(lat, 2);
+    	let v: Vec<_> = it.map(|x| x).collect();
+    	assert_eq!(v.len(), 4);
+	}
+	#[test]
+	fn iter_2() {
+    	let lat = BaseLattice::square_grid(1);
+    	let it = SAWIterator::new(lat, 3);
+    	let v: Vec<_> = it.map(|x| x).collect();
+    	assert_eq!(v.len(), 12);
+	}
+	#[test]
+	fn iter_3() {
+    	let lat = BaseLattice::square_grid(1);
+    	let it = SAWIterator::new(lat, 4);
+    	let v: Vec<_> = it.map(|x| x).collect();
+    	assert_eq!(v.len(), 36);
+	}
+	#[test]
+	fn iter_4() {
+    	let lat = BaseLattice::square_grid(1);
+    	let it = SAWIterator::new(lat, 5);
+    	let v: Vec<_> = it.map(|x| x).collect();
+    	assert_eq!(v.len(), 100);
+	}
+	#[test]
+	fn iter_5() {
+    	let lat = BaseLattice::square_grid(1);
+    	let it = SAWIterator::new(lat, 6);
+    	let v: Vec<_> = it.map(|x| x).collect();
+    	assert_eq!(v.len(), 284);
 	}
 }

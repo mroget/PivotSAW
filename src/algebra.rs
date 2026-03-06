@@ -1,14 +1,7 @@
-use crate::math::ArithmeticOps;
-
-enum MatrixKind { 
-	Row, 
-	Col,  
-}
+use num_traits::PrimInt;
 
 pub type Vector<T,const D : usize> = [T;D];
 pub type Matrix<T,const D1 : usize ,const D2 : usize> = [[T;D2];D1];
-
-
 
 
 
@@ -43,7 +36,7 @@ impl<T: Copy, const D : usize> IntoVector<T,D> for Vector<T,D> {
 	}
 }
 
-impl<T: ArithmeticOps, const D1 : usize, const D2 : usize, const D3 : usize> IntoVector<T,D3> for Matrix<T,D1,D2> {
+impl<T: PrimInt, const D1 : usize, const D2 : usize, const D3 : usize> IntoVector<T,D3> for Matrix<T,D1,D2> {
 	fn from_mat(self) -> Vector<T,D3> {
 		if D1*D2 != D3 {
 			panic!("{D1} x {D2} does not match {D3}");
@@ -64,7 +57,7 @@ impl<T: ArithmeticOps, const D1 : usize, const D2 : usize, const D3 : usize> Int
 
 
 
-pub fn vec_add<T : ArithmeticOps,const D : usize>(a : Vector<T,D>, b : Vector<T,D>) -> Vector<T,D> {
+pub fn vec_add<T : PrimInt,const D : usize>(a : Vector<T,D>, b : Vector<T,D>) -> Vector<T,D> {
 	let mut ret = [T::zero();D];
 	for i in 0..D {
 		ret[i] = a[i] + b[i];
@@ -72,7 +65,7 @@ pub fn vec_add<T : ArithmeticOps,const D : usize>(a : Vector<T,D>, b : Vector<T,
 	ret
 }
 
-pub fn vec_sub<T : ArithmeticOps,const D : usize>(a : Vector<T,D>, b : Vector<T,D>) -> Vector<T,D> {
+pub fn vec_sub<T : PrimInt,const D : usize>(a : Vector<T,D>, b : Vector<T,D>) -> Vector<T,D> {
 	let mut ret = [T::zero();D];
 	for i in 0..D {
 		ret[i] = a[i] - b[i];
@@ -80,7 +73,7 @@ pub fn vec_sub<T : ArithmeticOps,const D : usize>(a : Vector<T,D>, b : Vector<T,
 	ret
 }
 
-pub fn vec_square_len<T : ArithmeticOps,const D : usize>(a : Vector<T,D>) -> T {
+pub fn vec_square_len<T : PrimInt,const D : usize>(a : Vector<T,D>) -> T {
 	let mut ret = T::zero();
 	for i in 0..D {
 		ret = ret + a[i]*a[i];
@@ -88,11 +81,11 @@ pub fn vec_square_len<T : ArithmeticOps,const D : usize>(a : Vector<T,D>) -> T {
 	ret
 }
 
-pub fn vec_len<T : ArithmeticOps + ,const D : usize>(a : Vector<T,D>) -> f64 where f64: From<T> {
+pub fn vec_len<T : PrimInt ,const D : usize>(a : Vector<T,D>) -> f64 where f64: From<T> {
 	(<T as Into<f64>>::into(vec_square_len(a))).sqrt()
 }
 
-pub fn vec_minus<T : ArithmeticOps,const D : usize>(a : Vector<T,D>) -> Vector<T,D> {
+pub fn vec_minus<T : PrimInt,const D : usize>(a : Vector<T,D>) -> Vector<T,D> {
 	vec_sub([T::zero();D], a)
 }
 
@@ -103,7 +96,7 @@ pub fn vec_minus<T : ArithmeticOps,const D : usize>(a : Vector<T,D>) -> Vector<T
 
 
 
-pub fn dot<T : ArithmeticOps,
+pub fn dot<T : PrimInt,
 const D1 : usize,
 const D2 : usize,
 const D3 : usize, 
@@ -123,7 +116,7 @@ M2 : IntoMatrix<T, D2, D3>,
 	ret
 }
 
-pub fn transpose<T : ArithmeticOps,
+pub fn transpose<T : PrimInt,
 const D1 : usize,
 const D2 : usize,
 M : IntoMatrix<T, D1, D2>,
@@ -138,7 +131,7 @@ M : IntoMatrix<T, D1, D2>,
 	ret
 }
 
-pub fn transform<T : ArithmeticOps,const D : usize>(point : Vector<T,D>, q : Matrix<T,D,D>, origin : Vector<T,D>) -> Vector<T,D> {
+pub fn transform<T : PrimInt,const D : usize>(point : Vector<T,D>, q : Matrix<T,D,D>, origin : Vector<T,D>) -> Vector<T,D> {
 	vec_add(
 		dot(
 			q,
@@ -146,4 +139,90 @@ pub fn transform<T : ArithmeticOps,const D : usize>(point : Vector<T,D>, q : Mat
 			).from_mat(),
 		origin
 	)
+}
+
+
+#[cfg(test)]
+mod test {
+	use crate::algebra::IntoVector;
+	use crate::algebra::vec_add;
+	use crate::algebra::vec_sub;
+	use crate::algebra::vec_square_len;
+	use crate::algebra::vec_len;
+	use crate::algebra::dot;
+	use crate::algebra::transpose;
+
+	
+
+#[test]
+	fn test_vec_add() {
+	    let a = [0,-2,5,7];
+	    let b = [4,2,-3,6];
+	    let result = vec_add(a,b);
+	    assert_eq!(result, [4, 0, 2, 13]);
+	}
+
+
+	#[test]
+	fn test_vec_sub() {
+	    let a = [0,-2,5,7];
+	    let b = [4,2,-3,6];
+	    let result = vec_sub(a,b);
+	    assert_eq!(result, [-4, -4, 8, 1]);
+	}
+
+	#[test]
+	fn test_vec_len_square() {
+	    let a = [0,3,4];
+	    let result = vec_square_len(a);
+	    assert_eq!(result, 25);
+	}
+
+	#[test]
+	fn test_vec_len() {
+	    let a = [0,3,4];
+	    let result = vec_len(a);
+	    assert_eq!(result, 5.);
+	}
+
+
+
+	#[test]
+	fn test_mat_mul() {
+	    let a = [[0,1],[1,2]];
+	    let b = [[0,2],[3,4]];
+	    let result = dot(a,b);
+	    assert_eq!(result, [[3,4],[6,10]]);
+	}
+
+	#[test]
+	fn test_mat_apply() {
+	    let a = [[4,1,3],[1,2,-1]];
+	    let b = [1,2,3];
+	    let result : [i32; 2] = dot(a,b).from_mat();
+	    assert_eq!(result, [15,2]);
+	}
+
+	#[test]
+	fn test_mat_apply_row() {
+	    let a = [[2,1,3]];
+	    let b = [[0,2],[3,4],[1,2]];
+	    let result : [i32;2] = dot(a,b).from_mat();
+	    assert_eq!(result, [6,14]);
+	}
+
+
+	#[test]
+	fn test_transpose_mat() {
+	    let a = [[0,1],[2,3]];
+	    let result = transpose(a);
+	    assert_eq!(result, [[0,2],[1,3]]);
+	}
+
+	#[test]
+	fn test_transpose_vec() {
+	    let a = [1,2,3];
+	    let result = transpose(a);
+	    assert_eq!(result, [[1,2,3]]);
+	}
 }
