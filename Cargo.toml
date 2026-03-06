@@ -1,7 +1,14 @@
 [package]
-name = "saw"
+name = "pivot_saw"
 version = "0.1.0"
 edition = "2024"
+authors = ["Mathieu Roget <mathieu.roget@ens-lyon.org>"]
+keywords = ["math", "SAW", "pivot", "random walk"]
+description = "This crate provides an implementation of the pivot alorithm."
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/mroget/PivotSAW"
+homepage = "https://github.com/mroget/PivotSAW"
 
 [dev-dependencies]
 criterion = "0.3"
