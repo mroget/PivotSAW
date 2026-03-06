@@ -14,8 +14,8 @@ The pivot algorithm is an infinite Iterator which returns a new SAW at every ite
 ### Minimal example : Calculating average displacement in the body-centered cubic lattice
 ```rust
 use tqdm::tqdm;
-use saw::lattice::Lattice;
-use saw::lattice::BaseLattice;
+use pivot_saw::lattice::Lattice;
+use pivot_saw::lattice::BaseLattice;
 
 // Calculate the displacement of a walk
 fn displacement(walk : Vec<[i32;3]>) -> f64 {

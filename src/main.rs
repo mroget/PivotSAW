@@ -1,6 +1,6 @@
 use tqdm::tqdm;
-use saw::lattice::Lattice;
-use saw::lattice::BaseLattice;
+use pivot_saw::lattice::Lattice;
+use pivot_saw::lattice::BaseLattice;
 
 // Calculate the displacement of a walk
 fn displacement(walk : Vec<[i32;3]>) -> f64 {

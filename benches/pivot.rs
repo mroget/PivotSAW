@@ -1,6 +1,6 @@
-use saw::pivot::Pivot;
-use saw::lattice::BaseLattice;
-use saw::lattice::Lattice;
+use pivot_saw::pivot::Pivot;
+use pivot_saw::lattice::BaseLattice;
+use pivot_saw::lattice::Lattice;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 pub fn get_pivot_grid(len : usize) -> Pivot<i32,2,8> {
