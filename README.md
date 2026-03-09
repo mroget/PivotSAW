@@ -27,7 +27,7 @@ fn main() {
 
     // The pivot algorithm for SAW of size 1000.
     // The algorithm will warmup with 20*1000 = 20000 accepted pivots during initialization.
-    // Each time next() is called, 10 accepted pivots are calculated.
+    // Each time next() is called, 10*acceptation_rate pivots are attempted.
     let mut pivot = lat.get_pivot(1000, rand::rng(), 20, 10); 
 
     let mean = tqdm(0..10000) // for 10000 iterations

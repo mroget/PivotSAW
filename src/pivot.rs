@@ -22,6 +22,7 @@ pub struct Pivot<T : PrimInt + std::hash::Hash, const D : usize, const N : usize
 	pub walk : Vec<Vector<T,D>>,
 	pub symmetries : SymmetryGroup<T,D,N>,
 	pub n : usize,
+	pub acceptation_rate : f64,
 	rng : ThreadRng,
 	autocorrelation_factor : usize,
 }
@@ -33,10 +34,11 @@ impl<T : PrimInt + std::hash::Hash, const D : usize, const N : usize> Pivot<T,D,
 			walk : walk,
 			n : n,
 			symmetries : symmetries,
+			acceptation_rate : 0.,
 			rng : rng,
 			autocorrelation_factor : autocorrelation_factor,
 		};
-		p.pivot_multiple(thermalization_factor*n);
+		p.thermalize(thermalization_factor*n);
 		p
 	}
 
@@ -89,17 +91,22 @@ impl<T : PrimInt + std::hash::Hash, const D : usize, const N : usize> Pivot<T,D,
 	} 
 
 
-	fn pivot_multiple(&mut self, nb : usize) {
+	fn thermalize(&mut self, nb : usize) {
+		let mut k = 0;
 		for _i in 0..nb {
-			while !self.pivot() {}
+			while !self.pivot() {k+=1;}
 		}
+		self.acceptation_rate = (nb as f64) / (k as f64);
 	}
 } 
 
 impl<T : PrimInt + std::hash::Hash, const D : usize, const N : usize> Iterator for Pivot<T,D,N> {
 	type Item = Vec<Vector<T,D>>;
 	fn next(&mut self) -> Option<Self::Item> {
-		self.pivot_multiple(self.autocorrelation_factor);
+		for _i in 0..((self.autocorrelation_factor as f64) * self.acceptation_rate) as usize {
+			self.pivot();
+		}
+		//self.pivot_multiple(self.autocorrelation_factor);
 		Some(self.get_walk())
 	}
 }
@@ -424,7 +431,7 @@ use crate::symmetry_group::DIHEDRAL4;
 	#[test]
 	fn dist_tet() {
 		let len = 10;
-		let repeat = 10000;
+		let repeat = 100000;
 		let rng = rand::rng();
     	let lat = Tetrahedral::new(1);
 
@@ -446,6 +453,6 @@ use crate::symmetry_group::DIHEDRAL4;
 
     	let err = ((d1-d2) as f64).abs() / (d2 as f64);
     	println!("{} {} {}", d1, d2, err);
-		assert!(err <= 5e-2);
+		assert!(err <= 5e-4);
 	}
 }

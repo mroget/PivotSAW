@@ -27,14 +27,14 @@ pub trait Lattice<T : PrimInt + std::hash::Hash, const D: usize, const N: usize>
 		//!  - n: The size of the SAW to be generated.
 		//!  - rng: A ThreadRng oject. Can be used to obtain reproducable results.
 		//!  - thermalization_factor: Define how many pivots must be accepted before returning the iterator.
-		//!  - autocorrelation_factor: Define how many pivots must be accepted before returning a value. If equal to 0, the Pivot algorithm does nothing.
+		//!  - autocorrelation_factor: Define how many pivots must be attempted before returning a value. If equal to 0, the Pivot algorithm does nothing.
 		//!</br></br>
 		//!This function returns a Pivot algorithm that has been initialized. </br>
 		//!This means that several iterations of the Pivot algorithm are calculated and ignored before the Pivot is returned.
 		//! This is necessary to ensure that the results are as random as possible.</br>
 		//!</br>
-		//! Specifically, n*thermalization_factor accepted pivots are calculated.
-		//! Between each next() of the iterator, autocorrelation_factor pivots are accepted.
+		//! Specifically, `n*thermalization_factor` accepted pivots are calculated.
+		//! For each next() of the iterator, `autocorrelation_factor` $\times$ `acceptation_rate` pivots are attempted (without distinguishing weither they are successful).
 
 		let walk = self.straight(n);
 		let symmetries = self.symmetries();
