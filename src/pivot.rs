@@ -204,7 +204,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let lat = BaseLattice::square_grid(1);
     	let mut pivot = lat.get_pivot(len, rng, 10, 10);
     	let mut count = HashMap::new();
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		count.insert(w, 0);
     	}
     	for _i in 0..repeat {
@@ -229,7 +229,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let lat = BaseLattice::cubic_grid(1);
     	let mut pivot = lat.get_pivot(len, rng, 10, 10);
     	let mut count = HashMap::new();
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		count.insert(w, 0);
     	}
     	for _i in 0..repeat {
@@ -253,7 +253,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let lat = BaseLattice::bcc(1);
     	let mut pivot = lat.get_pivot(len, rng, 10, 10);
     	let mut count = HashMap::new();
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		count.insert(w, 0);
     	}
     	for _i in 0..repeat {
@@ -277,7 +277,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let lat = BaseLattice::fcc(1);
     	let mut pivot = lat.get_pivot(len, rng, 3, 3);
     	let mut count = HashMap::new();
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		count.insert(w, 0);
     	}
     	for _i in 0..repeat {
@@ -301,7 +301,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let lat = Tetrahedral::new(1);
     	let mut pivot = lat.get_pivot(len, rng, 3, 3);
     	let mut count = HashMap::new();
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		count.insert(w, 0);
     	}
     	for _i in 0..repeat {
@@ -333,7 +333,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let d1 = (dist1 as f64) / (repeat as f64);
     	let mut dist2 = 0;
     	let mut k = 0;
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		dist2 += vec_square_len(w[w.len()-1]);
     		k+=1;
     	}
@@ -360,7 +360,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let d1 = (dist1 as f64) / (repeat as f64);
     	let mut dist2 = 0;
     	let mut k = 0;
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		dist2 += vec_square_len(w[w.len()-1]);
     		k+=1;
     	}
@@ -388,7 +388,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let d1 = (dist1 as f64) / (repeat as f64);
     	let mut dist2 = 0;
     	let mut k = 0;
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		dist2 += vec_square_len(w[w.len()-1]);
     		k+=1;
     	}
@@ -416,7 +416,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let d1 = (dist1 as f64) / (repeat as f64);
     	let mut dist2 = 0;
     	let mut k = 0;
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		dist2 += vec_square_len(w[w.len()-1]);
     		k+=1;
     	}
@@ -444,7 +444,7 @@ use crate::symmetry_group::DIHEDRAL4;
     	let d1 = (dist1 as f64) / (repeat as f64);
     	let mut dist2 = 0;
     	let mut k = 0;
-    	for w in SAWIterator::new(lat.clone(), len) {
+    	for w in SAWIterator::new(lat.clone(), len, vec![]) {
     		dist2 += vec_square_len(w[w.len()-1]);
     		k+=1;
     	}

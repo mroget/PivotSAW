@@ -19,11 +19,16 @@ pub struct SAWIterator<T : PrimInt + std::hash::Hash, const D : usize, const N :
 
 impl<T : PrimInt + std::hash::Hash, const D : usize, const N : usize, L : Lattice<T, D, N>> SAWIterator<T,D,N,L> {
 	/// Create an iterator for a given lattice and walk length.
-	pub fn new(lat : L, n :usize) -> Self {
+	pub fn new(lat : L, n :usize, prefix : Vec<[T;D]>) -> Self {
+		let mut prefix = prefix;
+		let origin = match prefix.pop() {
+			Some(x) => {x},
+			None => {[T::zero(); D]},
+		};
 		SAWIterator {
 			lat : lat,
-			walk : Vec::with_capacity(n),
-			stack : vec![Arc::Forward([T::zero(); D])],
+			walk : prefix,
+			stack : vec![Arc::Forward(origin)],
 			over : false,
 			n : n,
 		}
@@ -84,35 +89,35 @@ mod tests {
 	#[test]
 	fn iter_1() {
     	let lat = BaseLattice::square_grid(1);
-    	let it = SAWIterator::new(lat, 2);
+    	let it = SAWIterator::new(lat, 2, vec![]);
     	let v: Vec<_> = it.map(|x| x).collect();
     	assert_eq!(v.len(), 4);
 	}
 	#[test]
 	fn iter_2() {
     	let lat = BaseLattice::square_grid(1);
-    	let it = SAWIterator::new(lat, 3);
+    	let it = SAWIterator::new(lat, 3, vec![]);
     	let v: Vec<_> = it.map(|x| x).collect();
     	assert_eq!(v.len(), 12);
 	}
 	#[test]
 	fn iter_3() {
     	let lat = BaseLattice::square_grid(1);
-    	let it = SAWIterator::new(lat, 4);
+    	let it = SAWIterator::new(lat, 4, vec![]);
     	let v: Vec<_> = it.map(|x| x).collect();
     	assert_eq!(v.len(), 36);
 	}
 	#[test]
 	fn iter_4() {
     	let lat = BaseLattice::square_grid(1);
-    	let it = SAWIterator::new(lat, 5);
+    	let it = SAWIterator::new(lat, 5, vec![]);
     	let v: Vec<_> = it.map(|x| x).collect();
     	assert_eq!(v.len(), 100);
 	}
 	#[test]
 	fn iter_5() {
     	let lat = BaseLattice::square_grid(1);
-    	let it = SAWIterator::new(lat, 6);
+    	let it = SAWIterator::new(lat, 6, vec![]);
     	let v: Vec<_> = it.map(|x| x).collect();
     	assert_eq!(v.len(), 284);
 	}
