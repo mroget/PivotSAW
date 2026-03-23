@@ -17,7 +17,7 @@ use crate::symmetry_group::SymmetryGroup;
 /// let lat = BaseLattice::fcc(1);
 /// let mut pivot = lat.get_pivot(100, rand::rng(), 10, 10); // SAW of length 10 in the FCC lattice.
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Pivot<T : PrimInt + std::hash::Hash, const D : usize, const N : usize> {
 	pub walk : Vec<Vector<T,D>>,
 	pub symmetries : SymmetryGroup<T,D,N>,
